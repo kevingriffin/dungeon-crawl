@@ -6,6 +6,10 @@
 
 
 
+(defun puts (&rest lines)
+  (loop for line in lines
+        do (princ line)
+           (fresh-line)))
 
 ; name:  symbol, name of the function, ie 'fg-red will define 'ansi-fg-red
 ; args:  arguments that the function should take
@@ -15,38 +19,39 @@
              (intern
                (with-output-to-string (s)
                  (princ a s)
-                 (princ b s))))
+                 (princ b s))))          
            (ansi-csi ()
              (format nil "~a[" (code-char 27))))
-  `(defun ,(concat-symbols 'ansi- name) ,args
-     (format nil "~a~a" ,(ansi-csi) ,block))))
+    `(defun ,(concat-symbols 'ansi- name) ,args
+       (format nil "~a~a" ,(ansi-csi) ,block))))
 
-
-(ansi underline () "4m" )
 
 (ansi goto (y x) 
   (format nil "~a;~aH" y x))
 
-(defun puts (&rest lines)
-  (loop for line in lines
-        do (princ line)
-           (fresh-line)))
+(ansi clear         ()  "0m")
+(ansi fg-clear      () "39m")
 
-(ansi fg-red    ( &key underline ) (concatenate 'string "31m" (if underline (ansi-underline) "")))
-(ansi fg-black  ( &key underline ) (concatenate 'string "30m" (if underline (ansi-underline) "")))
-(ansi fg-clear  ( &key underline ) (concatenate 'string "39m" (if underline (ansi-underline) "")))  
-(ansi fg-blue   ( &key underline ) (concatenate 'string "34m" (if underline (ansi-underline) "")))
-(ansi fg-green  ( &key underline ) (concatenate 'string "32m" (if underline (ansi-underline) "")))
-(ansi fg-yellow ( &key underline ) (concatenate 'string "33m" (if underline (ansi-underline) "")))
-(ansi fg-purple ( &key underline ) (concatenate 'string "35m" (if underline (ansi-underline) "")))
-(ansi bg-red    ( &key underline ) (concatenate 'string "41m" (if underline (ansi-underline) "")))
-(ansi bg-black  ( &key underline ) (concatenate 'string "40m" (if underline (ansi-underline) "")))
-(ansi bg-blue   ( &key underline ) (concatenate 'string "44m" (if underline (ansi-underline) "")))
-(ansi bg-green  ( &key underline ) (concatenate 'string "42m" (if underline (ansi-underline) "")))
-(ansi bg-yellow ( &key underline ) (concatenate 'string "43m" (if underline (ansi-underline) "")))
-(ansi bg-purple ( &key underline ) (concatenate 'string "45m" (if underline (ansi-underline) "")))
-(ansi bg-white  ( &key underline ) (concatenate 'string "47m" (if underline (ansi-underline) "")))
-(ansi clear     ( &key underline ) (concatenate 'string  "0m" (if underline (ansi-underline) "")))
+(ansi underline     ()  "4m")
+(ansi no-underline  () "24m")
+
+(ansi fg-black      () "30m")
+(ansi fg-red        () "31m")
+(ansi fg-green      () "32m")
+(ansi fg-yellow     () "33m")
+(ansi fg-blue       () "34m")
+(ansi fg-magenta    () "35m")
+(ansi fg-cyan       () "36m")
+(ansi fg-white      () "37m")
+                    
+(ansi bg-black      () "40m")
+(ansi bg-red        () "41m")
+(ansi bg-green      () "42m")
+(ansi bg-yellow     () "43m")
+(ansi bg-blue       () "44m")
+(ansi bg-magenta    () "45m")
+(ansi bg-cyan       () "46m")
+(ansi bg-white      () "47m")
 
 
 (defun red-text (text)
