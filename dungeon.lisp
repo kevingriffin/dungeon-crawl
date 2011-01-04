@@ -24,40 +24,35 @@
                                      (cdr (player-position *player*))))))
   (princ " here.")
   (fresh-line))
-
-(defun doit () 
-  (draw-map *map* *visited* 5 5))
-
-(defun move (direction)
-  (let ((player-x (car (player-position *player*)))
-        (player-y (cdr (player-position *player*))))
-       
-  (setf (aref *visited*
-              (map-index *rows*
-                         *columns*
-                         player-x
-                         player-y))
-        t)
   
-  (case direction
-    ((up)    (if (equal 0 player-x) 
-                 `(wont do it because ,player-x)
-                 (setf (player-position *player*)
-                       (cons (- player-x 1) player-y))))
-    ((down)  (if (equal (- *rows* 1) player-x)
-                 `(wont do it because ,player-x)
-                 (setf (player-position *player*)
-                       (cons (+ player-x 1) player-y))))
-    ((left)  (if (equal 0 player-y) 
-                 `(wont do it because ,player-y)
-                 (setf (player-position *player*)
-                       (cons player-x (- player-y 1)))))
-    ((right) (if (equal (- *columns* 1) player-y) 
-                 `(wont do it because ,player-y)
-                 (setf (player-position *player*)
-                       (cons player-x (+ player-y 1)))))))
-  (doit))
-
+(defun go-up ()
+  (let ((new-position (cons (car (player-position *player*)) (+ (cdr (player-position *player*)) 1))))
+  
+  (if (get-node new-position)
+      (setf (player-position *player*) new-position)
+      (format t "You can't go that way."))))
+      
+(defun go-down ()
+  (let ((new-position (cons (car (player-position *player*)) (- (cdr (player-position *player*)) 1))))
+  
+  (if (get-node new-position)
+      (setf (player-position *player*) new-position)
+      (format t "You can't go that way."))))
+      
+(defun go-right ()
+  (let ((new-position (cons (+ (car (player-position *player*)) 1) (cdr (player-position *player*)))))
+  
+  (if (get-node new-position)
+      (setf (player-position *player*) new-position)
+      (format t "You can't go that way."))))
+      
+(defun go-left ()
+  (let ((new-position (cons (- (car (player-position *player*)) 1) (cdr (player-position *player*)))))
+  
+  (if (get-node new-position)
+      (setf (player-position *player*) new-position)
+      (format t "You can't go that way."))))
+  
 (defun main-menu ()
   (case (read)
     (up        (go-up))
