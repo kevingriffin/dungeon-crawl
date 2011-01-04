@@ -2,51 +2,51 @@
 ; Print to screen - (format t "This will be green:~a This will be red:~a" (green-text "green") (red-text "red"))
 ; Return a string - (format nil "This will be green:~a This will be red:~a" (green-text "green") (red-text "red"))
 
-(defun ansi-csi ()
-  (format nil "~a[" (code-char 27)))
-  
-(defun ansi-fg-red ()
-  (format nil "~a31m" (ansi-csi)))
 
-(defun ansi-fg-black ()
-  (format nil "~a30m" (ansi-csi)))
-  
-(defun ansi-fg-clear ()
-  (format nil "~a39m" (ansi-csi)))
-  
-(defun ansi-fg-blue ()
-  (format nil "~a34m" (ansi-csi)))
-  
-(defun ansi-fg-green ()
-  (format nil "~a32m" (ansi-csi)))
-  
-(defun ansi-fg-yellow ()
-  (format nil "~a33m" (ansi-csi)))
-  
-(defun ansi-fg-purple ()
-  (format nil "~a35m" (ansi-csi)))
-  
-(defun ansi-bg-red ()
-  (format nil "~a41m" (ansi-csi)))
 
-(defun ansi-bg-black ()
-  (format nil "~a40m" (ansi-csi)))
-  
-(defun ansi-bg-blue ()
-  (format nil "~a44m" (ansi-csi)))
-  
-(defun ansi-bg-green ()
-  (format nil "~a42m" (ansi-csi)))
-  
-(defun ansi-bg-yellow ()
-  (format nil "~a43m" (ansi-csi)))
-  
-(defun ansi-bg-purple ()
-  (format nil "~a45m" (ansi-csi)))
-  
-(defun ansi-clear ()
-  (format nil "~a0m" (ansi-csi)))
-  
+
+; name:  symbol, name of the function, ie 'fg-red will define 'ansi-fg-red
+; args:  arguments that the function should take
+; block: code that evaluates to the ansi code as a string
+(defmacro ansi (name args block)
+  (labels ((concat-symbols (a b)
+             (intern
+               (with-output-to-string (s)
+                 (princ a s)
+                 (princ b s))))
+           (ansi-csi ()
+             (format nil "~a[" (code-char 27))))
+  `(defun ,(concat-symbols 'ansi- name) ,args
+     (format nil "~a~a" ,(ansi-csi) ,block))))
+
+
+(ansi underline () "4m" )
+
+(ansi goto (y x) 
+  (format nil "~a;~aH" y x))
+
+(defun puts (&rest lines)
+  (loop for line in lines
+        do (princ line)
+           (fresh-line)))
+
+(ansi fg-red    ( &key underline ) (concatenate 'string "31m" (if underline (ansi-underline) "")))
+(ansi fg-black  ( &key underline ) (concatenate 'string "30m" (if underline (ansi-underline) "")))
+(ansi fg-clear  ( &key underline ) (concatenate 'string "39m" (if underline (ansi-underline) "")))  
+(ansi fg-blue   ( &key underline ) (concatenate 'string "34m" (if underline (ansi-underline) "")))
+(ansi fg-green  ( &key underline ) (concatenate 'string "32m" (if underline (ansi-underline) "")))
+(ansi fg-yellow ( &key underline ) (concatenate 'string "33m" (if underline (ansi-underline) "")))
+(ansi fg-purple ( &key underline ) (concatenate 'string "35m" (if underline (ansi-underline) "")))
+(ansi bg-red    ( &key underline ) (concatenate 'string "41m" (if underline (ansi-underline) "")))
+(ansi bg-black  ( &key underline ) (concatenate 'string "40m" (if underline (ansi-underline) "")))
+(ansi bg-blue   ( &key underline ) (concatenate 'string "44m" (if underline (ansi-underline) "")))
+(ansi bg-green  ( &key underline ) (concatenate 'string "42m" (if underline (ansi-underline) "")))
+(ansi bg-yellow ( &key underline ) (concatenate 'string "43m" (if underline (ansi-underline) "")))
+(ansi bg-purple ( &key underline ) (concatenate 'string "45m" (if underline (ansi-underline) "")))
+(ansi bg-white  ( &key underline ) (concatenate 'string "47m" (if underline (ansi-underline) "")))
+(ansi clear     ( &key underline ) (concatenate 'string  "0m" (if underline (ansi-underline) "")))
+
+
 (defun red-text (text)
   (format nil "~a~a~a" (ansi-fg-red) text (ansi-fg-clear)))
 
