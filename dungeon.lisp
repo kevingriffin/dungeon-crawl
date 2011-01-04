@@ -3,23 +3,13 @@
 (defstruct player health position)
 (defstruct item)
 (defstruct (potion (:include item)) (power 15))
-(defstruct (sword (:include item)) (durability 100) (power 5))
+(defstruct (sword  (:include item)) (durability 100) (power 5))
 (defstruct (shield (:include item)) (durability 100) (power 7))
+(defstruct node (contents nil) (visited nil))
 
-(defparameter *map*     (make-array 25))
-(defparameter *visited* (make-array 25))
-(defparameter *rows*    5)
-(defparameter *columns* 5)
 (defparameter *inventory* (make-array 10))
 (defparameter *item-builders* nil)
 (defparameter *player* (make-player :position (cons 3 3)))
-
-(setf (aref *map* 17) (make-sword))
-(setf (aref *map* 2) (make-shield))
-(setf (aref *map* 3) (make-potion))
-(setf (aref *map* 10) (make-potion))
-(setf (aref *map* 22) (make-potion))
-(setf (aref *map* 8) (make-shield))
 
 (setf (aref *inventory* 0) (make-sword))
 (setf (aref *inventory* 1) (make-shield))
@@ -27,10 +17,38 @@
 (defun no-item
   NIL)
 
+
 (push #'make-potion *item-builders*)
 (push #'make-sword  *item-builders*)
 (push #'make-shield *item-builders*)
 (push #'no-item     *item-builders*)
+
+
+; Map related functions
+(defun make-map (rows columns)
+  (defparameter *map* (make-hash-table :test 'equal))
+  (create-node rows columns columns))
+
+(defun random-contents ()
+  nil)
+  
+(defun create-node (x y rows)
+  (if (< x 0)
+      nil
+      (progn
+        (setf (gethash (cons x y) *map*) (make-node :contents (random-contents)))
+        (if (= y 0)
+            (create-node (1- x) rows rows)
+            (create-node x (1- y) rows)))))
+
+(defun get-node (coord)
+  (gethash coord *map*))
+
+(defun set-contents (node item)
+  (if (consp node)
+      (setf (node-contents (get-node node)) item)
+      (setf (node-contents node) item)))
+; End map related functions
 
 (defmethod view-item (item)
   "Empty"
@@ -51,18 +69,11 @@
 )
 
 (defun pickup-item ()
-  (let ((player-x (car (player-position *player*)))
-        (player-y (cdr (player-position *player*)))
-       )
-  
-  (loop for i below (length *inventory*)
-     do (if (equal (aref *inventory* i) nil)
-              (progn
-                (setf (aref *inventory* i) (aref *map* (map-index *rows* *columns* player-x player-y)))
-                (setf (aref *map* (map-index *rows* *columns* player-x player-y))
-                      nil))
-              )))
-  )
+  (if (and (item-p (node-contents (get-node (player-position *player*)))) (<= (length *inventory*) 10))
+      (progn
+        (push (node-contents (get-node (player-position *player*))) *inventory*)
+        (setf (node-contents (get-node (player-position *player*))) nil))
+      nil))
 
 (defun view-inventory ()
   (loop for item across *inventory*
@@ -164,3 +175,17 @@
 
 (defun map-index (rows columns row column)
   (+ (* row columns) column ))
+
+(defun main-menu ()
+  (case (read)
+    (up        (go-up))
+    (down      (go-down))
+    (left      (go-left))
+    (right     (go-right))
+    (inventory (view-inventory))
+    (pickup    (pickup-item))))
+
+(defun game-loop ()
+  (draw-board)
+  (main-menu)
+  (game-loop))

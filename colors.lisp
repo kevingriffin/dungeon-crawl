@@ -1,6 +1,8 @@
 ; Examples: 
-; Print to screen - (format t "This will be green:~a This will be red:~a" (green-text "green") (red-text "red"))
-; Return a string - (format nil "This will be green:~a This will be red:~a" (green-text "green") (red-text "red"))
+; Print to screen        - (format t "This will be green:~a This will be red:~a" (green-text "green") (red-text "red"))
+; Return a string        - (format nil "This will be green:~a This will be red:~a" (green-text "green") (red-text "red"))
+; Using bakground colors - (format t "~a~a" (red-background (blue-text "test")) (yellow-background (green-text "test")))
+
 
 
 
