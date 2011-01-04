@@ -3,7 +3,7 @@
 (defstruct player health position)
 (defstruct item)
 (defstruct (potion (:include item)) (power 15))
-(defstruct (sword (:include item)) (durability 100) (power 5))
+(defstruct (sword  (:include item)) (durability 100) (power 5))
 (defstruct (shield (:include item)) (durability 100) (power 7))
 
 (defparameter *map*     (make-array 25))
@@ -156,3 +156,17 @@
 
 (defun map-index (rows columns row column)
   (+ (* row columns) column ))
+
+(defun main-menu ()
+  (case (read)
+    (up        (go-up))
+    (down      (go-down))
+    (left      (go-left))
+    (right     (go-right))
+    (inventory (view-inventory))
+    (pickup    (pickup-item))))
+
+(defun game-loop ()
+  (draw-board)
+  (main-menu)
+  (game-loop))
