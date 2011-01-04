@@ -2,7 +2,7 @@
 
 (defun make-map (rows columns)
   (defparameter *map* (make-hash-table :test 'equal))
-  (create-node rows columns columns))
+  (create-node (1- rows) (1- columns) (1- columns)))
 
 (defun random-contents ()
   nil)
