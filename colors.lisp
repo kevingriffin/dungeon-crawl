@@ -11,6 +11,9 @@
 (defun ansi-fg-black ()
   (format nil "~a30m" (ansi-csi)))
   
+(defun ansi-fg-clear ()
+  (format nil "~a39m" (ansi-csi)))
+  
 (defun ansi-fg-blue ()
   (format nil "~a34m" (ansi-csi)))
   
@@ -45,19 +48,19 @@
   (format nil "~a0m" (ansi-csi)))
   
 (defun red-text (text)
-  (format nil "~a~a~a" (ansi-fg-red) text (ansi-fg-black)))
+  (format nil "~a~a~a" (ansi-fg-red) text (ansi-fg-clear)))
 
 (defun black-text (text)
-  (format nil "~a~a~a" (ansi-fg-black) text (ansi-fg-black)))
+  (format nil "~a~a~a" (ansi-fg-black) text (ansi-fg-clear)))
   
 (defun blue-text (text)
-  (format nil "~a~a~a" (ansi-fg-blue) text (ansi-fg-black)))
+  (format nil "~a~a~a" (ansi-fg-blue) text (ansi-fg-clear)))
 
 (defun yellow-text (text)
-  (format nil "~a~a~a" (ansi-fg-yellow) text (ansi-fg-black)))
+  (format nil "~a~a~a" (ansi-fg-yellow) text (ansi-fg-clear)))
 
 (defun green-text (text)
-  (format nil "~a~a~a" (ansi-fg-green) text (ansi-fg-black)))
+  (format nil "~a~a~a" (ansi-fg-green) text (ansi-fg-clear)))
 
 (defun purple-text (text)
-  (format nil "~a~a~a" (ansi-fg-purple) text (ansi-fg-black)))
+  (format nil "~a~a~a" (ansi-fg-purple) text (ansi-fg-clear)))
