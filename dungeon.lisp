@@ -1,3 +1,5 @@
+(load "colors")
+
 (defstruct player health position)
 (defstruct item)
 (defstruct (potion (:include item)) (power 15))
@@ -32,7 +34,7 @@
 
 (defmethod view-item ((item sword))
   (concatenate 'string "Sword      " "Power: " 
-  (prin1-to-string (sword-power item)) " Durability: " (prin1-to-string (sword-durability item)))
+  (prin1-to-string (sword-power item)) (format nil " ~a: " (green-text "Durability"))  (prin1-to-string (sword-durability item)))
 )
 
 (defmethod view-item ((item shield))
