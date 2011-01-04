@@ -3,72 +3,57 @@
 ; Return a string        - (format nil "This will be green:~a This will be red:~a" (green-text "green") (red-text "red"))
 ; Using bakground colors - (format t "~a~a" (red-background (blue-text "test")) (yellow-background (green-text "test")))
 
-(defun ansi-csi ()
-  (format nil "~a[" (code-char 27)))
 
-(defun ansi-clear ()
-  (format nil "~a0m" (ansi-csi)))
 
-(defun ansi-fg-red ()
-  (format nil "~a31m" (ansi-csi)))
 
-(defun ansi-fg-black ()
-  (format nil "~a30m" (ansi-csi)))
-  
-(defun ansi-fg-clear ()
-  (format nil "~a39m" (ansi-csi)))
-  
-(defun ansi-fg-blue ()
-  (format nil "~a34m" (ansi-csi)))
-  
-(defun ansi-fg-green ()
-  (format nil "~a32m" (ansi-csi)))
-  
-(defun ansi-fg-yellow ()
-  (format nil "~a33m" (ansi-csi)))
-  
-(defun ansi-fg-purple ()
-  (format nil "~a35m" (ansi-csi)))
-  
-(defun ansi-bg-red ()
-  (format nil "~a41m" (ansi-csi)))
+(defun puts (&rest lines)
+  (loop for line in lines
+        do (princ line)
+           (fresh-line)))
 
-(defun ansi-bg-black ()
-  (format nil "~a40m" (ansi-csi)))
-  
-(defun ansi-bg-blue ()
-  (format nil "~a44m" (ansi-csi)))
-  
-(defun ansi-bg-green ()
-  (format nil "~a42m" (ansi-csi)))
-  
-(defun ansi-bg-yellow ()
-  (format nil "~a43m" (ansi-csi)))
-  
-(defun ansi-bg-purple ()
-  (format nil "~a45m" (ansi-csi)))
+; name:  symbol, name of the function, ie 'fg-red will define 'ansi-fg-red
+; args:  arguments that the function should take
+; block: code that evaluates to the ansi code as a string
+(defmacro ansi (name args block)
+  (labels ((concat-symbols (a b)
+             (intern
+               (with-output-to-string (s)
+                 (princ a s)
+                 (princ b s))))          
+           (ansi-csi ()
+             (format nil "~a[" (code-char 27))))
+    `(defun ,(concat-symbols 'ansi- name) ,args
+       (format nil "~a~a" ,(ansi-csi) ,block))))
 
-(defun ansi-bg-clear ()
-  (format nil "~a49m" (ansi-csi)))
 
-(defun red-background (text)
-  (format nil "~a~a~a" (ansi-bg-red) text (ansi-bg-clear)))
+(ansi goto (y x) 
+  (format nil "~a;~aH" y x))
 
-(defun black-background (text)
-  (format nil "~a~a~a" (ansi-bg-black) text (ansi-bg-clear)))
-  
-(defun blue-background (text)
-  (format nil "~a~a~a" (ansi-bg-blue) text (ansi-bg-clear)))
-  
-(defun yellow-background (text)
-  (format nil "~a~a~a" (ansi-bg-yellow) text (ansi-bg-clear)))
-  
-(defun green-background (text)
-  (format nil "~a~a~a" (ansi-bg-green) text (ansi-bg-clear)))
+(ansi clear         ()  "0m")
+(ansi fg-clear      () "39m")
 
-(defun purple-background (text)
-  (format nil "~a~a~a" (ansi-bg-purple) text (ansi-bg-clear)))
-  
+(ansi underline     ()  "4m")
+(ansi no-underline  () "24m")
+
+(ansi fg-black      () "30m")
+(ansi fg-red        () "31m")
+(ansi fg-green      () "32m")
+(ansi fg-yellow     () "33m")
+(ansi fg-blue       () "34m")
+(ansi fg-magenta    () "35m")
+(ansi fg-cyan       () "36m")
+(ansi fg-white      () "37m")
+                    
+(ansi bg-black      () "40m")
+(ansi bg-red        () "41m")
+(ansi bg-green      () "42m")
+(ansi bg-yellow     () "43m")
+(ansi bg-blue       () "44m")
+(ansi bg-magenta    () "45m")
+(ansi bg-cyan       () "46m")
+(ansi bg-white      () "47m")
+
+
 (defun red-text (text)
   (format nil "~a~a~a" (ansi-fg-red) text (ansi-fg-clear)))
 

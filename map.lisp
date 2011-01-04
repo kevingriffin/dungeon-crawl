@@ -16,6 +16,7 @@
             (create-node (1- x) rows rows)
             (create-node x (1- y) rows)))))
 
+
 (defun get-node (coord)
   (gethash coord *map*))
 
@@ -24,15 +25,17 @@
       (setf (node-contents (get-node node)) item)
       (setf (node-contents node) item)))
 
+
 (defun populate-map (new_map)
   (loop for i below (length new_map)
-    do (setf (aref new_map i) (funcall (nth (random (length *item-builders*)) *item-builders*))))
-)
+    do (setf (aref new_map i)
+             (funcall (nth (random (length *item-builders*))
+                           *item-builders*)))))
     
 (defun reveal-map (map_history)
   (loop for i below (length map_history)
-     do (setf (aref map_history i) t))
-)
+     do (setf (aref map_history i)
+              t)))
 
 (defun draw-map (map_contents map_history rows columns)
   (princ (code-char 27))
@@ -43,20 +46,16 @@
   (princ "[")
   (princ "0;0H")
 
-    (display-message (player-position *player*))
+  (display-message (player-position *player*))
   (loop for x below rows 
-    do 
-    (fresh-line)
-    (loop for y below columns do (princ "-   "))
-    (fresh-line)      
-    (loop for y below columns
-  		do
-        (cond ((equal (player-position *player*) (cons x y)) 
-                  (princ "| x "))
-              ((equal (aref map_history (map-index rows columns x y)) nil)
-                  (princ "| ? "))
-              ((item-p (aref map_contents (map-index rows columns x y)))
-                  (princ "| i "))
-              (t	(princ "|   ")) 
-      )))
-)
+    do (fresh-line)
+       (loop for y below columns do (princ "-   "))
+       (fresh-line)      
+       (loop for y below columns
+             do (cond ((equal (player-position *player*) (cons x y)) 
+                          (princ "| x "))
+                      ((equal (aref map_history (map-index rows columns x y)) nil)
+                          (princ "| ? "))
+                      ((item-p (aref map_contents (map-index rows columns x y)))
+                          (princ "| i "))
+                      (t	(princ "|   "))))))

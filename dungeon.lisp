@@ -3,10 +3,6 @@
 (load "items")
 
 (defstruct player health position)
-(defparameter *player* (make-player :position (cons 3 3)))
-
-(setf (aref *inventory* 0) (make-sword))
-(setf (aref *inventory* 1) (make-shield))
 
 (defun view-inventory ()
   (loop for item across *inventory*
@@ -14,63 +10,49 @@
           do (princ (+ i 1))
           (princ " ")
           (princ (view-item item))
-          (fresh-line)
-  )
+          (fresh-line))
   (princ "Select an item: ")
-  NIL
-)
+  NIL)
+
 
 (defun display-message (position)
   (princ "There is a ")
-  (princ (view-item (aref *map* (map-index *rows* *columns* 
-                                (car (player-position *player*)) (cdr (player-position *player*))))))
+  (princ (view-item (aref *map* 
+                          (map-index *rows*
+                                     *columns* 
+                                     (car (player-position *player*))
+                                     (cdr (player-position *player*))))))
   (princ " here.")
-  (fresh-line)
-)
-
-(defun doit () 
-  (draw-map *map* *visited* 5 5)
-  )
-
-(defun move (direction)
-  (let ((player-x (car (player-position *player*)))
-       (player-y (cdr (player-position *player*)))
-       )
-       
-  (setf (aref *visited* (map-index *rows* *columns* player-x player-y)) t)
-  (case direction
-  ((up)   (if (equal 0 player-x) 
-              `(wont do it because ,player-x)
-              (setf (player-position *player*) (cons (- player-x 1) player-y))
-          )
-  )
-  ((down) 
-        (if (equal (- *rows* 1) player-x) 
-                    `(wont do it because ,player-x)
-                    (setf (player-position *player*) (cons (+ player-x 1) player-y))
-                )
-  )
+  (fresh-line))
   
-  ((left) 
-        (if (equal 0 player-y) 
-                    `(wont do it because ,player-y)
-                    (setf (player-position *player*) (cons player-x (- player-y 1)))
-                )
-  )
+(defun go-up ()
+  (let ((new-position (cons (car (player-position *player*)) (+ (cdr (player-position *player*)) 1))))
   
-  ((right) 
-        (if (equal (- *columns* 1) player-y) 
-                    `(wont do it because ,player-y)
-                    (setf (player-position *player*) (cons player-x (+ player-y 1)))
-                )
-  )
-  ))
-  (doit)
-)
-
-(defun map-index (rows columns row column)
-  (+ (* row columns) column ))
-
+  (if (get-node new-position)
+      (setf (player-position *player*) new-position)
+      (format t "You can't go that way."))))
+      
+(defun go-down ()
+  (let ((new-position (cons (car (player-position *player*)) (- (cdr (player-position *player*)) 1))))
+  
+  (if (get-node new-position)
+      (setf (player-position *player*) new-position)
+      (format t "You can't go that way."))))
+      
+(defun go-right ()
+  (let ((new-position (cons (+ (car (player-position *player*)) 1) (cdr (player-position *player*)))))
+  
+  (if (get-node new-position)
+      (setf (player-position *player*) new-position)
+      (format t "You can't go that way."))))
+      
+(defun go-left ()
+  (let ((new-position (cons (- (car (player-position *player*)) 1) (cdr (player-position *player*)))))
+  
+  (if (get-node new-position)
+      (setf (player-position *player*) new-position)
+      (format t "You can't go that way."))))
+  
 (defun main-menu ()
   (case (read)
     (up        (go-up))
@@ -86,4 +68,9 @@
 (defun game-loop ()
   (draw-board)
   (main-menu)
+  (game-loop))
+  
+(defun new-game ()
+  (defparameter *player* (make-player :health 30 :position (cons 3 3)))
+  (make-map 5 5)
   (game-loop))
