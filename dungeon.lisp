@@ -3,7 +3,6 @@
 (load "items")
 
 (defstruct player health position)
-(defparameter *player* (make-player :position (cons 3 3)))
 
 (defun view-inventory ()
   (loop for item across *inventory*
@@ -74,4 +73,9 @@
 (defun game-loop ()
   (draw-board)
   (main-menu)
+  (game-loop))
+  
+(defun new-game ()
+  (defparameter *player* (make-player :health 30 :position (cons 3 3)))
+  (make-map 5 5)
   (game-loop))
