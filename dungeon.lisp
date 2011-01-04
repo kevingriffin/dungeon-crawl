@@ -24,6 +24,14 @@
 (setf (aref *inventory* 0) (make-sword))
 (setf (aref *inventory* 1) (make-shield))
 
+(defun no-item
+  NIL)
+
+(push #'make-potion *item-builders*)
+(push #'make-sword  *item-builders*)
+(push #'make-shield *item-builders*)
+(push #'no-item     *item-builders*)
+
 (defmethod view-item (item)
   "Empty"
 )
@@ -44,7 +52,7 @@
 
 (defun pickup-item ()
   (let ((player-x (car (player-position *player*)))
-       (player-y (cdr (player-position *player*)))
+        (player-y (cdr (player-position *player*)))
        )
   
   (loop for i below (length *inventory*)
@@ -146,7 +154,7 @@
 ;return entrance
 (defun populate-map (new_map)
   (loop for i below (length new_map)
-    do (setf (aref new_map i) (make-item :kind 'potion)))
+    do (setf (aref new_map i) (funcall (nth (random (length *item-builders*)) *item-builders*))))
 )
     
 (defun reveal-map (map_history)
