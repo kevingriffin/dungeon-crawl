@@ -1,79 +1,64 @@
-; Examples: 
-; Print to screen        - (format t "This will be green:~a This will be red:~a" (green-text "green") (red-text "red"))
-; Return a string        - (format nil "This will be green:~a This will be red:~a" (green-text "green") (red-text "red"))
-; Using bakground colors - (format t "~a~a" (red-background (blue-text "test")) (yellow-background (green-text "test")))
+; Usage:
+; (text-color :fg red :persist t "test")
+; test(printed in red)
+; ---any other text printed here will be red---
+; (revert-text-color)
 
-
-
-
-(defun puts (&rest lines)
-  (loop for line in lines
-        do (princ line)
-           (fresh-line)))
-
-; name:  symbol, name of the function, ie 'fg-red will define 'ansi-fg-red
-; args:  arguments that the function should take
-; block: code that evaluates to the ansi code as a string
-(defmacro ansi (name args block)
-  (labels ((concat-symbols (a b)
-             (intern
-               (with-output-to-string (s)
-                 (princ a s)
-                 (princ b s))))          
-           (ansi-csi ()
-             (format nil "~a[" (code-char 27))))
-    `(defun ,(concat-symbols 'ansi- name) ,args
-       (format nil "~a~a" ,(ansi-csi) ,block))))
-
-
-(ansi goto (coord)
-  (format nil "~a;~aH" (cdr coord) (car coord)))
-
-(ansi clear-screen ()
-  (format t "~a[2J" (code-char 27)))
-
-(ansi clear         ()  "0m")
-(ansi fg-clear      () "39m")
-
-(ansi underline     ()  "4m")
-(ansi no-underline  () "24m")
-
-(ansi fg-black      () "30m")
-(ansi fg-red        () "31m")
-(ansi fg-green      () "32m")
-(ansi fg-yellow     () "33m")
-(ansi fg-blue       () "34m")
-(ansi fg-magenta    () "35m")
-(ansi fg-cyan       () "36m")
-(ansi fg-white      () "37m")
-                    
-(ansi bg-black      () "40m")
-(ansi bg-red        () "41m")
-(ansi bg-green      () "42m")
-(ansi bg-yellow     () "43m")
-(ansi bg-blue       () "44m")
-(ansi bg-magenta    () "45m")
-(ansi bg-cyan       () "46m")
-(ansi bg-white      () "47m")
-
-
-(defun red-text (text)
-  (format nil "~a~a~a" (ansi-fg-red) text (ansi-fg-clear)))
-
-(defun black-text (text)
-  (format nil "~a~a~a" (ansi-fg-black) text (ansi-fg-clear)))
+; (text-color :fg green :persist t) - printed text will be green until (revert-text-color) is called
+; (text-color :fg blue "test2")  - test2 will be printed in blue and then the color will be reverted
   
-(defun blue-text (text)
-  (format nil "~a~a~a" (ansi-fg-blue) text (ansi-fg-clear)))
+(defparameter *color-stack* (list (format nil "~a[0m" (code-char 27))))
 
-(defun yellow-text (text)
-  (format nil "~a~a~a" (ansi-fg-yellow) text (ansi-fg-clear)))
+(defun color-stack-text ()
+  (labels ((make-text (lst text)
+             (if lst
+                 (make-text (cdr lst) (concatenate 'string (car lst) text))
+                 text)))
+          (make-text *color-stack* "")))
 
-(defun green-text (text)
-  (format nil "~a~a~a" (ansi-fg-green) text (ansi-fg-clear)))
+(defun ansi-fg (color)
+  (case color
+    (black  "30")
+    (red    "31")
+    (green  "32")
+    (yellow "33")
+    (blue   "34")
+    (magenta"35")
+    (cyan   "36")
+    (white  "37")
+    (t      "39")))
 
-(defun purple-text (text)
-  (format nil "~a~a~a" (ansi-fg-purple) text (ansi-fg-clear)))
+(defun ansi-bg (color)
+  (case color
+    (black  "40")
+    (red    "41")
+    (green  "42")
+    (yellow "43")
+    (blue   "44")
+    (magenta"45")
+    (cyan   "46")
+    (white  "47")
+    (t      "49")))
+  
+(defun ansi-color (&optional (fg "39") (bg "49"))
+  (format nil "~a[~a;~am" (code-char 27) fg bg))
 
-(defun white-text (text)
-  (format nil "~a~a~a" (ansi-fg-white) text (ansi-fg-clear)))
+(defun revert-text-color ()
+  (if (> (length *color-stack*) 1)
+      (pop *color-stack*)
+      nil))
+  
+(defun text-color (&key fg bg persist text)
+  (push (ansi-color (ansi-fg fg) (ansi-bg bg))  *color-stack*)
+  (when text (format t "~a~a" (color-stack-text) text))
+  (unless persist (pop *color-stack*))
+  (format t "~a" (color-stack-text)))
+
+(defun ansi-clear-screen ()
+  (format t "~a[2J" (code-char 27)))
+  
+(defun ansi-goto (coord)
+  (format t "~a[~a;~aH" (code-char 27) (cdr coord) (car coord)))
+
+(defun ansi-clear-screen ()
+  (format t "~a[2J" (code-char 27)))

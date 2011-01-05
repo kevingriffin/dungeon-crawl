@@ -53,6 +53,9 @@
       (setf (player-position *player*) new-position)
       (format t "You can't go that way."))))
   
+(defun quit-game ()
+  (setf *running* nil))
+  
 (defun main-menu ()
   (case (read)
     (up        (go-up))
@@ -61,6 +64,7 @@
     (right     (go-right))
     (inventory (view-inventory))
     (pickup    (pickup-item))
+    (quit      (quit-game))
     (t (progn
          (format t "What?")
          (main-menu)))))
@@ -68,10 +72,10 @@
 (defun game-loop ()
   (draw-map)
   (main-menu)
-  (format t "test")
-  (game-loop))
+  (when *running* game-loop))
   
 (defun new-game ()
+  (defparameter *running* t)
   (defparameter *player* (make-player :health 30 :position (cons 3 3)))
   (make-map 25 25)
   (game-loop))

@@ -1,7 +1,8 @@
 (defstruct node (contents nil) (visited nil))
 
 (defun make-map (rows columns)
-  (defparameter *map* (make-hash-table :test 'equal))
+  (defparameter *map*    (make-hash-table :test 'equal))
+  (defparameter *height* columns)
   (create-node (1- rows) (1- columns) (1- columns)))
 
 (defun random-contents ()
@@ -38,30 +39,28 @@
               t)))
 
 (defun content-text (node)
-  (let ((contents (node-contents node)))
-        (cond ((not (node-visited node))
-                 (format nil "~a" (white-text "X")))
-              ((item-p contents)
-                 (format nil "~a" (yellow-text "i")))
-              (t (format nil " ")))))
+  (if (node-visited node)
+      (cond ((item-p (node-contents node)) 
+               (text-color :fg 'yellow :text "i"))
+            (princ " "))
+      (princ "#")))
+
+(defun adjust-coord (coord)
+  (cons (1+ (* 2 (car coord))) (cdr coord)))
 
 (defun draw-map ()
   (ansi-clear-screen)
-  (format t "~a>> ~%----------~%" (ansi-goto (cons 0 0)))
+  (text-color :fg 'white :persist t)
   (maphash 
     (lambda (coord node)
-      (format t "~a~a" (ansi-goto 
-                         (cons 
-                           (+ 2 (car coord))
-                           (+ 3 (cdr coord)))) 
-                       (content-text node)))
+      (ansi-goto (adjust-coord coord))
+      (content-text node))
     *map*)
-  (let ((position 
-          (cons
-            (+ 2 (car (player-position *player*)))
-            (+ 3 (cdr (player-position *player*))))))
-       (format t "~a~a" (ansi-goto position) (blue-text "O")))
-  (format t "~a" (ansi-goto (cons 3 0))))
+  (ansi-goto (adjust-coord (player-position *player*)))
+  (text-color :fg 'blue :text "O")
+  (revert-text-color)
+  (ansi-goto (cons 0 (1+ *height*)))
+  (text-color :fg 'black :bg 'white :text ">> "))
     
 ;(defun draw-map (map_contents map_history rows columns)
 ;  (princ (code-char 27))
