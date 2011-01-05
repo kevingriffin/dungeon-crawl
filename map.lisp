@@ -45,18 +45,18 @@
             (princ " "))
       (princ "#")))
 
-(defun adjust-coord (coord)
-  (cons (1+ (* 2 (car coord))) (cdr coord)))
+(defun adjust-coord (coord height)
+  (cons (1+ (* 2 (car coord))) (- height (cdr coord))))
 
 (defun draw-map ()
   (ansi-clear-screen)
   (text-color :fg 'white :persist t)
   (maphash 
     (lambda (coord node)
-      (ansi-goto (adjust-coord coord))
+      (ansi-goto (adjust-coord coord *height*))
       (content-text node))
     *map*)
-  (ansi-goto (adjust-coord (player-position *player*)))
+  (ansi-goto (adjust-coord (player-position *player*) *height*))
   (text-color :fg 'blue :text "O")
   (revert-text-color)
   (ansi-goto (cons 0 (1+ *height*)))

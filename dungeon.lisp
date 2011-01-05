@@ -72,7 +72,7 @@
 (defun game-loop ()
   (draw-map)
   (main-menu)
-  (when *running* game-loop))
+  (when *running* (game-loop)))
   
 (defun new-game ()
   (defparameter *running* t)
