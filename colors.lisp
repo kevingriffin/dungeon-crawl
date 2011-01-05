@@ -26,8 +26,11 @@
        (format nil "~a~a" ,(ansi-csi) ,block))))
 
 
-(ansi goto (y x) 
-  (format nil "~a;~aH" y x))
+(ansi goto (coord)
+  (format nil "~a;~aH" (cdr coord) (car coord)))
+
+(ansi clear-screen ()
+  (format t "~a[2J" (code-char 27)))
 
 (ansi clear         ()  "0m")
 (ansi fg-clear      () "39m")
@@ -71,3 +74,6 @@
 
 (defun purple-text (text)
   (format nil "~a~a~a" (ansi-fg-purple) text (ansi-fg-clear)))
+
+(defun white-text (text)
+  (format nil "~a~a~a" (ansi-fg-white) text (ansi-fg-clear)))

@@ -66,11 +66,12 @@
          (main-menu)))))
 
 (defun game-loop ()
-  (draw-board)
+  (draw-map)
   (main-menu)
+  (format t "test")
   (game-loop))
   
 (defun new-game ()
   (defparameter *player* (make-player :health 30 :position (cons 3 3)))
-  (make-map 5 5)
+  (make-map 25 25)
   (game-loop))

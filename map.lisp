@@ -37,25 +37,52 @@
      do (setf (aref map_history i)
               t)))
 
-(defun draw-map (map_contents map_history rows columns)
-  (princ (code-char 27))
-  (princ "[")
-  (princ "2J")
+(defun content-text (node)
+  (let ((contents (node-contents node)))
+        (cond ((not (node-visited node))
+                 (format nil "~a" (white-text "X")))
+              ((item-p contents)
+                 (format nil "~a" (yellow-text "i")))
+              (t (format nil " ")))))
 
-  (princ (code-char 27))
-  (princ "[")
-  (princ "0;0H")
-
-  (display-message (player-position *player*))
-  (loop for x below rows 
-    do (fresh-line)
-       (loop for y below columns do (princ "-   "))
-       (fresh-line)      
-       (loop for y below columns
-             do (cond ((equal (player-position *player*) (cons x y)) 
-                          (princ "| x "))
-                      ((equal (aref map_history (map-index rows columns x y)) nil)
-                          (princ "| ? "))
-                      ((item-p (aref map_contents (map-index rows columns x y)))
-                          (princ "| i "))
-                      (t	(princ "|   "))))))
+(defun draw-map ()
+  (ansi-clear-screen)
+  (format t "~a>> ~%----------~%" (ansi-goto (cons 0 0)))
+  (maphash 
+    (lambda (coord node)
+      (format t "~a~a" (ansi-goto 
+                         (cons 
+                           (+ 2 (car coord))
+                           (+ 3 (cdr coord)))) 
+                       (content-text node)))
+    *map*)
+  (let ((position 
+          (cons
+            (+ 2 (car (player-position *player*)))
+            (+ 3 (cdr (player-position *player*))))))
+       (format t "~a~a" (ansi-goto position) (blue-text "O")))
+  (format t "~a" (ansi-goto (cons 3 0))))
+    
+;(defun draw-map (map_contents map_history rows columns)
+;  (princ (code-char 27))
+;  (princ "[")
+;  (princ "2J")
+;
+;  (princ (code-char 27))
+;  (princ "[")
+;  (princ "0;0H")
+;
+;  (display-message (player-position *player*))
+;  (loop for x below rows 
+;    do (fresh-line)
+;       (loop for y below columns do (princ "-   "))
+;       (fresh-line)      
+;       (loop for y below columns
+;             do (cond ((equal (player-position *player*) (cons x y)) 
+;                          (princ "| x "))
+;                      ((equal (aref map_history (map-index rows columns x y)) nil)
+;                          (princ "| ? "))
+;                      ((item-p (aref map_contents (map-index rows columns x y)))
+;                          (princ "| i "))
+;                      (t	(princ "|   "))))))
+;
