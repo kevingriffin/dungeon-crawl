@@ -29,29 +29,33 @@
   (let ((new-position (cons (car (player-position *player*)) (+ (cdr (player-position *player*)) 1))))
   
   (if (get-node new-position)
-      (setf (player-position *player*) new-position)
+      (move-player new-position)
       (format t "You can't go that way."))))
       
 (defun go-down ()
   (let ((new-position (cons (car (player-position *player*)) (- (cdr (player-position *player*)) 1))))
   
   (if (get-node new-position)
-      (setf (player-position *player*) new-position)
+      (move-player new-position)
       (format t "You can't go that way."))))
       
 (defun go-right ()
   (let ((new-position (cons (+ (car (player-position *player*)) 1) (cdr (player-position *player*)))))
   
   (if (get-node new-position)
-      (setf (player-position *player*) new-position)
+      (move-player new-position)
       (format t "You can't go that way."))))
       
 (defun go-left ()
   (let ((new-position (cons (- (car (player-position *player*)) 1) (cdr (player-position *player*)))))
   
   (if (get-node new-position)
-      (setf (player-position *player*) new-position)
+      (move-player new-position)
       (format t "You can't go that way."))))
+
+(defun move-player (new-position)
+  (set-visited new-position)
+  (setf (player-position *player*) new-position))
   
 (defun quit-game ()
   (setf *running* nil))
@@ -65,6 +69,9 @@
     (inventory (view-inventory))
     (pickup    (pickup-item))
     (quit      (quit-game))
+    (exit      (quit-game))
+    (bye       (quit-game))
+    (q         (quit-game))
     (t (progn
          (format t "What?")
          (main-menu)))))
@@ -78,4 +85,5 @@
   (defparameter *running* t)
   (defparameter *player* (make-player :health 30 :position (cons 3 3)))
   (make-map 25 25)
+  (move-player (cons 3 3))
   (game-loop))

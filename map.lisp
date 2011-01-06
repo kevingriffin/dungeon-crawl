@@ -26,6 +26,10 @@
       (setf (node-contents (get-node node)) item)
       (setf (node-contents node) item)))
 
+(defun set-visited (node)
+  (if (consp node)
+      (set-visited (get-node node))
+      (setf (node-visited node) t)))
 
 (defun populate-map (new_map)
   (loop for i below (length new_map)
@@ -38,11 +42,14 @@
      do (setf (aref map_history i)
               t)))
 
+(defun pit-p (contents)
+  (eql contents 'pit))
+
 (defun content-text (node)
   (if (node-visited node)
-      (cond ((item-p (node-contents node)) 
-               (text-color :fg 'yellow :text "i"))
-            (princ " "))
+      (cond ((item-p (node-contents node)) (text-color :fg 'yellow :text "i"))
+            ((pit-p  (node-contents node)) (text-color :bg 'black  :text " "))
+            (t (princ " ")))
       (princ "#")))
 
 (defun adjust-coord (coord height)
@@ -60,4 +67,4 @@
   (text-color :fg 'blue :text "O")
   (revert-text-color)
   (ansi-goto (cons 0 (1+ *height*)))
-  (text-color :fg 'black :bg 'white :text ">> "))
+  (text-color :fg 'black :bg 'white :text (format nil "~%>> ")))
