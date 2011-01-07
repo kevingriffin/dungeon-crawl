@@ -45,7 +45,9 @@
 
 (defun revert-text-color ()
   (if (> (length *color-stack*) 1)
-      (pop *color-stack*)
+      (progn
+        (pop *color-stack*)
+        (text-color))
       nil))
   
 (defun text-color (&key fg bg persist text)

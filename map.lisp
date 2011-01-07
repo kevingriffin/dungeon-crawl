@@ -67,10 +67,11 @@
   (ansi-goto (adjust-coord (player-position *player*) *height*))
   (text-color :fg 'blue :text "O")
   (revert-text-color)
+  (draw-menu *width*)
   (ansi-goto (cons 0 (1+ *height*)))
-  (text-color :fg 'black :bg 'white :text (format nil "~%>> "))
-  (draw-menu (cons *width* *height*)))
+  (text-color :fg 'black :bg 'white :text (format nil "~%>> ")))
   
   
-(defun draw-menu (origin)
-  (print-menu (lambda () (ansi-goto (adjust-coord origin *height*)))))
+(defun draw-menu (x)
+  (print-menu (lambda (line-number) 
+                (ansi-goto (cons (+ 3 (* 2 x)) line-number)))))

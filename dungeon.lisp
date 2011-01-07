@@ -80,13 +80,16 @@
   '("Movement:" " up down left right" "Items:" " inventory (View and manage items)" " pickup (Pick up the item at current location)" "Game:" " quit (Exit game)"))         
 
 (defun print-menu (position-function)
-  (funcall position-function)
+  (funcall position-function 0)
   (format t "Commands:~%" )
-  (mapcar 
-    (lambda (line)
-      (funcall position-function)
-      (format t " ~a ~%" line) ) 
-    (user-commands))
+  
+  (let ((line-number 1))
+    (mapcar 
+      (lambda (line)
+        (funcall position-function (incf line-number))
+        (text-color :bg 'red :text " ")
+        (format t " ~a ~%" line)) 
+      (user-commands)))
   )
 
 (defun game-loop ()
