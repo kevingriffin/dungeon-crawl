@@ -3,6 +3,7 @@
 (defun make-map (rows columns)
   (defparameter *map*    (make-hash-table :test 'equal))
   (defparameter *height* rows)
+  (defparameter *width*  columns)
   (create-node (1- rows) (1- columns) (1- columns)))
 
 (defun random-contents ()
@@ -67,4 +68,9 @@
   (text-color :fg 'blue :text "O")
   (revert-text-color)
   (ansi-goto (cons 0 (1+ *height*)))
-  (text-color :fg 'black :bg 'white :text (format nil "~%>> ")))
+  (text-color :fg 'black :bg 'white :text (format nil "~%>> "))
+  (draw-menu (cons *width* *height*)))
+  
+  
+(defun draw-menu (origin)
+  (print-menu (lambda () (ansi-goto (adjust-coord origin *height*)))))
