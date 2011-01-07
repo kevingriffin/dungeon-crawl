@@ -49,7 +49,7 @@
   (if (node-visited node)
       (cond ((item-p (node-contents node)) (text-color :fg 'yellow :text "i"))
             ((pit-p  (node-contents node)) (text-color :bg 'black  :text " "))
-            (t (princ " ")))
+            (t (princ  " ")))
       (princ "#")))
 
 (defun adjust-coord (coord height)

@@ -14,6 +14,8 @@
 (push #'make-shield *item-builders*)
 (push #'no-item     *item-builders*)
 
+(defun random-item ()
+  (funcall (nth (random (length *item-builders*)) *item-builders*)))
 
 (defmethod view-item (item)
   "Empty")
@@ -36,8 +38,6 @@
                        (prin1-to-string (shield-power item)) 
                        " Durability: " 
                        (prin1-to-string (shield-durability item))))
-
-
 
 (defun pickup-item ()
   (if (and (item-p (node-contents (get-node (player-position *player*))))
