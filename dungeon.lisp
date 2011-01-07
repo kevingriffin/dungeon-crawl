@@ -75,6 +75,19 @@
     (t (progn
          (format t "What?")
          (main-menu)))))
+         
+(defun user-commands ()
+  '("Movement:" " up down left right" "Items:" " inventory (View and manage items)" " pickup (Pick up the item at current location)" "Game:" " quit (Exit game)"))         
+
+(defun print-menu (position-function)
+  (funcall position-function)
+  (format t "Commands:~%" )
+  (mapcar 
+    (lambda (line)
+      (funcall position-function)
+      (format t " ~a ~%" line) ) 
+    (user-commands))
+  )
 
 (defun game-loop ()
   (draw-map)
