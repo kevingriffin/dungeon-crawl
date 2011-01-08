@@ -80,12 +80,14 @@
       (user-commands))
     (ansi-goto (cons x (incf line-number)))
     (format t "~a~%" (text-color :fg 'blue :text "Inventory" :to-string t))
-    (mapcar 
-      (lambda (item)
-        (ansi-goto (cons x (incf line-number)))
-        (text-color :bg 'red :text " ")
-        (format t "~a" (view-item item))) 
-      *inventory*)))
+    (let ((item-number 0))
+         (mapcar
+           (lambda (item)
+             (ansi-goto (cons x (incf line-number)))
+             (text-color :fg 'white :bg 'red :text item-number)
+             (incf item-number)
+             (format t " ~a" (view-item item))) 
+           *inventory*))))
 
 (defun game-loop ()
   (draw-map)
