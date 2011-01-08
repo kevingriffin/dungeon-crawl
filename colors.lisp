@@ -50,11 +50,19 @@
         (text-color))
       nil))
   
-(defun text-color (&key fg bg persist text)
+(defun text-color (&key fg bg persist text to-string)
   (push (ansi-color (ansi-fg fg) (ansi-bg bg))  *color-stack*)
-  (when text (format t "~a~a" (color-stack-text) text))
-  (unless persist (pop *color-stack*))
-  (format t "~a" (color-stack-text)))
+  (if to-string
+      (if persist
+          (format nil "~a~a" (color-stack-text) text)
+          (progn
+            (let ((start-text (format nil "~a~a" (color-stack-text) text)))
+                 (pop *color-stack*)
+                 (concatenate 'string start-text (color-stack-text)))))
+      (progn
+        (when text (format t "~a~a" (color-stack-text) text))
+        (unless persist (pop *color-stack*))
+        (format t "~a" (color-stack-text)))))
 
 (defun ansi-clear-screen ()
   (format t "~a[2J" (code-char 27)))

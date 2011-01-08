@@ -13,17 +13,6 @@
           (fresh-line))
   (princ "Select an item: ")
   NIL)
-
-
-(defun display-message (position)
-  (princ "There is a ")
-  (princ (view-item (aref *map* 
-                          (map-index *rows*
-                                     *columns* 
-                                     (car (player-position *player*))
-                                     (cdr (player-position *player*))))))
-  (princ " here.")
-  (fresh-line))
   
 (defun go-up ()
   (let ((new-position (cons (car (player-position *player*)) (+ (cdr (player-position *player*)) 1))))
@@ -79,18 +68,24 @@
 (defun user-commands ()
   '("Movement:" " up down left right" "Items:" " inventory (View and manage items)" " pickup (Pick up the item at current location)" "Game:" " quit (Exit game)"))         
 
-(defun print-menu (position-function)
+(defun print-menu (x position-function)
   (funcall position-function 0)
-  (format t "Commands:~%" )
-  
+  (format t "~a" (text-color :fg 'blue :text "Commands" :to-string t))
   (let ((line-number 1))
     (mapcar 
       (lambda (line)
         (funcall position-function (incf line-number))
         (text-color :bg 'red :text " ")
         (format t " ~a ~%" line)) 
-      (user-commands)))
-  )
+      (user-commands))
+    (ansi-goto (cons x (incf line-number)))
+    (format t "~a~%" (text-color :fg 'blue :text "Inventory" :to-string t))
+    (mapcar 
+      (lambda (item)
+        (ansi-goto (cons x (incf line-number)))
+        (text-color :bg 'red :text " ")
+        (format t "~a" (view-item item))) 
+      *inventory*)))
 
 (defun game-loop ()
   (draw-map)
@@ -102,4 +97,6 @@
   (defparameter *player* (make-player :health 30 :position (cons 3 3)))
   (make-map 25 25)
   (move-player (cons 3 3))
+  (set-contents (get-node (cons 3 3)) (random-item))
+  (loop for i upto 40 do (set-contents (random-node *width* *height*) (random-item)))
   (game-loop))

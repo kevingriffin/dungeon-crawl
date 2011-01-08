@@ -8,6 +8,9 @@
 
 (defun random-contents ()
   nil)
+
+(defun random-node (width height)
+  (gethash (cons (random width) (random height)) *map*))
   
 (defun create-node (x y rows)
   (if (< x 0)
@@ -31,17 +34,6 @@
   (if (consp node)
       (set-visited (get-node node))
       (setf (node-visited node) t)))
-
-(defun populate-map (new_map)
-  (loop for i below (length new_map)
-    do (setf (aref new_map i)
-             (funcall (nth (random (length *item-builders*))
-                           *item-builders*)))))
-    
-(defun reveal-map (map_history)
-  (loop for i below (length map_history)
-     do (setf (aref map_history i)
-              t)))
 
 (defun pit-p (contents)
   (eql contents 'pit))
@@ -73,5 +65,5 @@
   
   
 (defun draw-menu (x)
-  (print-menu (lambda (line-number) 
+  (print-menu (+ 3 (* 2 x)) (lambda (line-number) 
                 (ansi-goto (cons (+ 3 (* 2 x)) line-number)))))
