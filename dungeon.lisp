@@ -87,7 +87,9 @@
              (text-color :fg 'white :bg 'red :text item-number)
              (incf item-number)
              (format t " ~a" (view-item item))) 
-           *inventory*))))
+           *inventory*)
+         (ansi-goto (cons x (incf line-number)))
+         (text-color :fg 'blue :text "Status"))))
 
 (defun game-loop ()
   (draw-map)
