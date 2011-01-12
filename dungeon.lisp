@@ -104,7 +104,6 @@
   (defparameter *running* t)
   (defparameter *player* (make-player :health 30 :position (cons 3 3)))
   (make-map 25 25)
-  (set-contents (get-node (cons 3 3)) (random-item))
   (loop for i upto 40 do (set-contents (random-node *width* *height*) (random-item)))
   (game-loop))
 
