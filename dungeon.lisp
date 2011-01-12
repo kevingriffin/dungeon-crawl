@@ -1,6 +1,7 @@
 (load "colors")
 (load "map")
 (load "items")
+(load "monsters")
 
 (defstruct player health position)
 
@@ -105,6 +106,7 @@
   (defparameter *player* (make-player :health 30 :position (cons 3 3)))
   (make-map 25 25)
   (loop for i upto 40 do (set-contents (random-node *width* *height*) (random-item)))
+  (loop for i upto 40 do (set-contents (random-node *width* *height*) (new-hydra)))
   (game-loop))
 
 (new-game)
