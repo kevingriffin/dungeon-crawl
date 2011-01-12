@@ -103,3 +103,5 @@
   (set-contents (get-node (cons 3 3)) (random-item))
   (loop for i upto 40 do (set-contents (random-node *width* *height*) (random-item)))
   (game-loop))
+
+(new-game)
