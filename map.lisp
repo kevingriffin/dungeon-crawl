@@ -40,8 +40,9 @@
 
 (defun content-text (node)
   (if (node-visited node)
-      (cond ((item-p (node-contents node)) (text-color :fg 'yellow :text "i"))
-            ((pit-p  (node-contents node)) (text-color :bg 'black  :text " "))
+      (cond ((item-p    (node-contents node)) (text-color :fg 'yellow :text "i"))
+            ((monster-p (node-contents node)) (text-color :fg 'red    :text "M"))
+            ((pit-p     (node-contents node)) (text-color :bg 'black  :text " "))
             (t (princ  " ")))
       (princ "#")))
 
