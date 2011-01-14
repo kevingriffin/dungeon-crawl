@@ -9,8 +9,8 @@
 (defun new-hydra ()
   (make-hydra :health (1+ (random 9))))
 
-(defmethod monster-attack ((self hydra))
-  (random (hydra-health self)))
+(defmethod monster-attack ((self hydra) player)
+  (player-attacked player (attack-damage self)))
 
 (defmethod monster-attacked ((self hydra) damage)
   (decf (hydra-health self) damage))
@@ -25,4 +25,8 @@
   (hydra-health self))
 
 (defmethod monster-to-str ((self hydra))
-  (format nil "A hydra with ~d heads." (hydra-heads self))))
+  (format nil "A hydra with ~d heads." (hydra-heads self)))
+
+(defmethod attack-damage ((self hydra))
+  (1+ (random (max (1- (hydra-heads self))
+                   1))))
