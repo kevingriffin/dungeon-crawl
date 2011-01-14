@@ -1,9 +1,9 @@
 (load "colors")
 (load "map")
 (load "items")
+(load "player")
 (load "monsters")
-
-(defstruct player health position)
+(load "combat")
 
 (defun view-inventory ()
   (loop for item across *inventory*
@@ -68,7 +68,9 @@
     (q         (quit-game))
     (t (progn
          (format t "What?")
-         (main-menu)))))
+         (main-menu))))
+  (when (on-monsters?)
+        (FIGHT! *player* (get-monsters))))
          
 (defun user-commands ()
   '("Movement:" " up down left right" "Items:" " inventory (View and manage items)" " pickup (Pick up the item at current location)" "Game:" " quit (Exit game)"))         
@@ -106,7 +108,7 @@
   (defparameter *player* (make-player :health 30 :position (cons 3 3)))
   (make-map 25 25)
   (loop for i upto 40 do (set-contents (random-node *width* *height*) (random-item)))
-  (loop for i upto 40 do (set-contents (random-node *width* *height*) (new-hydra)))
+  (loop for i upto 40 do (set-contents (random-node *width* *height*) (list (new-hydra))))
   (game-loop))
 
 (new-game)
