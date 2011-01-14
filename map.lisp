@@ -40,9 +40,9 @@
 
 (defun content-text (node)
   (if (node-visited node)
-      (cond ((item-p    (node-contents node)) (text-color :fg 'yellow :text "i"))
-            ((monster-p (node-contents node)) (text-color :fg 'red    :text "M"))
-            ((pit-p     (node-contents node)) (text-color :bg 'black  :text " "))
+      (cond ((item-p  (node-contents node)) (text-color :fg 'yellow :text "i"))
+            ((brood-p (node-contents node)) (text-color :fg 'red    :text "M"))
+            ((pit-p   (node-contents node)) (text-color :bg 'black  :text " "))
             (t (princ  " ")))
       (princ "#")))
 
@@ -68,3 +68,18 @@
 (defun draw-menu (x)
   (print-menu (+ 3 (* 2 x)) (lambda (line-number) 
                 (ansi-goto (cons (+ 3 (* 2 x)) line-number)))))
+
+
+(defun get-contents ()
+  (node-contents (get-node (player-position *player*))))
+
+(defun brood-p (obj)
+  (and (listp obj)
+       (monster-p (car obj))
+       obj))
+
+(defun get-monsters ()
+  (brood-p (get-contents)))  
+
+(defun on-monsters? ()
+  (get-monsters))
